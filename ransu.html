@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>4桁ランダム数字・読み上げ＆判定</title>
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f0f8ff;
+  color: #222;
+  text-align: center;
+  padding-top: 40px;
+}
+h1 { color: #0044cc; }
+#num {
+  font-size: 3rem;
+  color: #0044cc;
+  background: #e8f0ff;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin: 15px;
+}
+button {
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  margin: 8px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+}
+button:hover { background: #0056b3; }
+input {
+  font-size: 1.3rem;
+  text-align: center;
+  width: 120px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #007bff;
+}
+#result { font-size: 1.3rem; margin-top: 10px; font-weight: bold; }
+.ok { color: green; }
+.ng { color: red; }
+</style>
+</head>
+<body>
+<h1>4桁ランダム数字・読み上げ＆判定</h1>
+<div id="num">----</div><br>
+<button id="btnNew">🎲 新しい4桁を生成</button>
+<button id="btnRead">🔊 読み上げ</button>
+<br>
+<input id="guess" type="text" maxlength="4" placeholder="例: 1234">
+<br>
+<button id="btnCheck">✅ 判定</button>
+<div id="result"></div>
+
+<script>
+let target = "";
+
+// 4桁生成
+function newNumber(){
+  target = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+  document.getElementById("num").textContent = target;
+  document.getElementById("result").textContent = "";
+  document.getElementById("guess").value = "";
+}
+
+// 読み上げ
+function speakNumber(){
+  if(!target){
+    alert("まず数字を生成してください！");
+    return;
+  }
+  const msg = new SpeechSynthesisUtterance(target.split("").join(" "));
+  msg.lang = "ja-JP";
+  msg.rate = 1.0;
+  speechSynthesis.speak(msg);
+}
+
+// 判定
+function check(){
+  const g = document.getElementById("guess").value.trim();
+  const r = document.getElementById("result");
+  if(!/^\\d{4}$/.test(g)){
+    r.innerHTML = "<span class='ng'>4桁の数字を入力してください</span>";
+    return;
+  }
+  if(g === target){
+    r.innerHTML = "<span class='ok'>🎉 完全一致！</span>";
+  } else {
+    let correct = 0;
+    for(let i=0;i<4;i++) if(g[i]===target[i]) correct++;
+    r.innerHTML = `<span class='ng'>${correct}桁一致</span>`;
+  }
+}
+
+// ボタン操作
+document.getElementById("btnNew").addEventListener("click", newNumber);
+document.getElementById("btnRead").addEventListener("click", speakNumber);
+document.getElementById("btnCheck").addEventListener("click", check);
+
+newNumber(); // 初回生成
+</script>
+</body>
+</html>
